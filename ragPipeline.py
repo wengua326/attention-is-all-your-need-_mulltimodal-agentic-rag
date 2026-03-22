@@ -3,9 +3,6 @@ import sys               # 2. 召唤 Python 的底层模块管家
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3') # 3. 狸猫换太子！
 
 
-
-
-
 from dotenv import load_dotenv
 load_dotenv()
 from langchain_core.runnables import RunnableLambda , RunnablePassthrough
@@ -26,7 +23,7 @@ from langchain_community.tools.tavily_search import TavilySearchResults
 
 
 st.set_page_config(page_title = 'I love Kerian', layout= 'wide')
-st.title('AI Assistant')
+st.title('Agentic Multimodal Rag System for Attention is all your need')
 
 @st.cache_resource #只运行一次
 def load_agent() :
@@ -130,7 +127,7 @@ for msg in st.session_state.messages:
         st.markdown(msg["content"])
 
 # 接收用户输入
-if prompt := st.chat_input("Feel free to ask question..."):
+if prompt := st.chat_input("Feel free to ask question about the paper"):
     
     # 记录并显示用户输入
     st.session_state.messages.append({"role": "user", "content": prompt})
@@ -139,7 +136,7 @@ if prompt := st.chat_input("Feel free to ask question..."):
         
     # AI 思考与回答
     with st.chat_message("assistant"):
-        with st.spinner("AI 正在思考、翻阅资料或上网搜索..."):
+        with st.spinner("等我睡五分钟"):
             
             # 把包含全部历史的 session_state 交给 Agent
             result = my_agent.invoke({"messages": st.session_state.messages})
