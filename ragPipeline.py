@@ -30,14 +30,18 @@ def load_agent() :
     def parse_docs(docs):
         b64 = []
         text = []
-        for doc in docs :
-            try :
-                unwrapped_doc = pickle.loads(doc) #把byte 换回去
-                text.append(unwrapped_doc)
-            except Exception :
-                unwrapped_image = doc.decode('utf-8')
-                b64.append(unwrapped_image)
-        return {'image' : b64 , 'texts' : text}
+        for doc in docs:
+            # 1. 核心修复：必须从 LangChain 的 Document 对象中提取纯文本字符串
+            content = doc.page_content 
+            
+            # 2. 判断它是图片(base64)还是普通文本
+            # 简单且高效的逻辑：如果一段文字极其长，且中间没有任何空格，那它100%是 base64 图片编码
+            if len(content) > 200 and " " not in content:
+                b64.append(content)
+            else:
+                text.append(content)
+                
+        return {'images' : b64 , 'texts' : text }
 
     @tool
     def search_pdf_database(query: str) -> list:
