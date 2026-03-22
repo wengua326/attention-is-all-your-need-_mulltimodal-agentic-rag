@@ -36,33 +36,34 @@ def is_valid_image(data: bytes) -> bool:
 @st.cache_resource #只运行一次
 def load_agent() :
     def parse_docs(docs):
-            b64_images = []
-            texts = []
-
-            for doc in docs:
-                try:
-                    # 尝试解 pickle（文本）
-                    unwrapped_doc = pickle.loads(doc)
-                    texts.append(unwrapped_doc)
-
-                except Exception:
-                    # 👇 只处理“真正的图片”
-                    if isinstance(doc, bytes) and is_valid_image(doc):
+        b64_images = []
+        texts = []
+    
+        for doc in docs:
+            try:
+                unwrapped_doc = pickle.loads(doc)
+                texts.append(unwrapped_doc)
+    
+            except Exception:
+                # ✅ bytes → 检测是不是图片
+                if isinstance(doc, bytes):
+                    if is_valid_image(doc):
                         try:
                             b64_image = base64.b64encode(doc).decode('utf-8')
                             b64_images.append(b64_image)
-                        except Exception:
-                            pass  # 避免异常炸掉
-
-                    # 如果是字符串（有可能已经是base64）
-                    elif isinstance(doc, str) and doc.startswith("iVBOR") or doc.startswith("/9j/"):
+                        except:
+                            pass
+    
+                # ✅ str → 判断是不是base64图片
+                elif isinstance(doc, str):
+                    if doc.startswith("iVB0") or doc.startswith("/9j/"):
                         b64_images.append(doc)
-
-                    # ❗其他情况直接忽略（这是关键）
-                    else:
-                        continue
-
-            return {'images': b64_images, 'texts': texts}
+    
+                # ❗其他一律忽略
+                else:
+                    continue
+    
+        return {'images': b64_images, 'texts': texts}
 
     @tool
     def search_pdf_database(query: str) -> list:
