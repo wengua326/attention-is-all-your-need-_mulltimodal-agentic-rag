@@ -71,6 +71,7 @@ def load_agent() :
         当你需要回答关于《Attention Is All You Need》论文、Transformer架构时，必须调用此工具去检索本地数据库。
         """
         docs = emb.retriever.invoke(query) 
+        docs = docs[:8]
         parsed_data = parse_docs(docs)
         
         # 准备一个空的“积木盒”
