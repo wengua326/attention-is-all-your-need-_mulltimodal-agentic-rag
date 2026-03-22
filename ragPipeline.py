@@ -46,7 +46,7 @@ def load_agent() :
                # elif isinstance(doc, str):
                    # b64.append(doc)
                 
-              return text          
+            return text          
         #return {'image': b64, 'texts': text}
 
     @tool
