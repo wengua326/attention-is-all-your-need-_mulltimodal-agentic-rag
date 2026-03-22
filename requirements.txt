@@ -6,4 +6,4 @@ langchain-community
 langchain-groq
 langchain-google-genai
 python-dotenv
-
+chromadb
