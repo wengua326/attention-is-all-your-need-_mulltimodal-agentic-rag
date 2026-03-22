@@ -7,3 +7,4 @@ langchain-google-genai
 python-dotenv
 base64
 pickle
+pysqlite3-binary

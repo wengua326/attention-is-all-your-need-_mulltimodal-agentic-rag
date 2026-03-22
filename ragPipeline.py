@@ -1,3 +1,11 @@
+__import__('pysqlite3')  # 1. 强行把我们刚才下载的最新版引擎加载进来
+import sys               # 2. 召唤 Python 的底层模块管家
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3') # 3. 狸猫换太子！
+
+
+
+
+
 from dotenv import load_dotenv
 load_dotenv()
 from langchain_core.runnables import RunnableLambda , RunnablePassthrough
