@@ -28,20 +28,26 @@ st.title('Agentic Multimodal Rag System for Attention is all your need')
 @st.cache_resource #只运行一次
 def load_agent() :
     def parse_docs(docs):
+        import base64 # 引入 base64 转换工具
+        
         b64 = []
         text = []
         for doc in docs:
-            # 1. 核心修复：必须从 LangChain 的 Document 对象中提取纯文本字符串
-            content = doc.page_content 
-            
-            # 2. 判断它是图片(base64)还是普通文本
-            # 简单且高效的逻辑：如果一段文字极其长，且中间没有任何空格，那它100%是 base64 图片编码
-            if len(content) > 200 and " " not in content:
-                b64.append(content)
-            else:
-                text.append(content)
-                
-        return {'images' : b64 , 'texts' : text }
+            # 你的原始神级逻辑：尝试把 bytes 解冻成带有 .text 的 Element 对象
+            try:
+                unwrapped_doc = pickle.loads(doc) 
+                text.append(unwrapped_doc)
+            except Exception:
+                # 真正的破案点：如果解冻失败，说明这是【纯图片的二进制文件流】
+                # 绝对不能用 utf-8 去 decode 图片！
+                # 正确做法：把它转成大模型认识的 Base64 字符串
+                if isinstance(doc, bytes):
+                    b64_image = base64.b64encode(doc).decode('utf-8')
+                    b64.append(b64_image)
+                elif isinstance(doc, str):
+                    b64.append(doc)
+                    
+        return {'image': b64, 'texts': text}
 
     @tool
     def search_pdf_database(query: str) -> list:
