@@ -29,24 +29,25 @@ def load_agent() :
     def parse_docs(docs):
         import base64 # 引入 base64 转换工具
         
-        b64 = []
+        #b64 = []
         text = []
         for doc in docs:
             # 你的原始神级逻辑：尝试把 bytes 解冻成带有 .text 的 Element 对象
-            try:
+            #try:
                 unwrapped_doc = pickle.loads(doc) 
                 text.append(unwrapped_doc)
-            except Exception:
+           # except Exception:
                 # 真正的破案点：如果解冻失败，说明这是【纯图片的二进制文件流】
                 # 绝对不能用 utf-8 去 decode 图片！
                 # 正确做法：把它转成大模型认识的 Base64 字符串
-                if isinstance(doc, bytes):
-                    b64_image = base64.b64encode(doc).decode('utf-8')
-                    b64.append(b64_image)
-                elif isinstance(doc, str):
-                    b64.append(doc)
-                    
-        return {'image': b64, 'texts': text}
+              #  if isinstance(doc, bytes):
+                   # b64_image = base64.b64encode(doc).decode('utf-8')
+                   # b64.append(b64_image)
+               # elif isinstance(doc, str):
+                   # b64.append(doc)
+                
+              return text          
+        #return {'image': b64, 'texts': text}
 
     @tool
     def search_pdf_database(query: str) -> list:
@@ -81,14 +82,14 @@ def load_agent() :
         })
 
         # 拼装图片积木（让模型真正“看”到图片）
-        if len(parsed_data['image']) > 0:
-            for b64_img in parsed_data['image']:
-                content_blocks.append({
-                    "type": "image_url",
-                    "image_url": {"url": f"data:image/jpeg;base64,{b64_img}"}
-                })
-                
-        return content_blocks
+       # if len(parsed_data['image']) > 0:
+        #    for b64_img in parsed_data['image']:
+        #        content_blocks.append({
+        #            "type": "image_url",
+        #            "image_url": {"url": f"data:image/jpeg;base64,{b64_img}"}
+        #        })
+         #       
+        #return content_blocks
 
     # --- 3. 工具 B：Tavily 联网搜索工具 ---
     search_specific_websites = TavilySearchResults(
